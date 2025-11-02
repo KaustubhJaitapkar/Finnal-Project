@@ -93,6 +93,11 @@ model Eligibility {
 // Hackathons posted by organizers (separate from `Hackathon` which stores member requirements)
 model OrganizerHackathon {
   id             String       @id @default(cuid())
+  // Optional team request fields (used by Find Members flow)
+  teamName       String?
+  skills         String[]     @default([])
+  role           String?
+  experience     String?
   hackathonName  String
   regURL         String
   hackathonMode  String

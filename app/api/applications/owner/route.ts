@@ -12,29 +12,33 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const postId = url.searchParams.get("postId");
 
-    if (!postId) {
-      return NextResponse.json({ error: 'postId query parameter is required' }, { status: 400 });
-    }
-
-    // Ensure the requester is the owner of the post (supports both OrganizerHackathon and legacy Hackathon)
-    const organizerPost = await prisma.organizerHackathon.findUnique({ where: { id: postId } });
-    if (organizerPost) {
-      // Allow if organizerPost is owned by the session user.
-      // If organizerPost.userId is missing (rows created before migration),
-      // allow access for now so organizers can still view applications —
-      // we recommend backfilling userId on existing rows.
-      if (organizerPost.userId && organizerPost.userId !== session.user.id) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // If postId is not provided, fetch applications for all posts owned by the current organizer.
+    // This makes the endpoint more forgiving for UI pages that render without a postId query param.
+    let postFilter: any = undefined;
+    if (postId) {
+      // Validate ownership of the specific post
+  const organizerPost = await (prisma as any).organizerHackathon.findUnique({ where: { id: postId } });
+      if (organizerPost) {
+        if (organizerPost.userId && organizerPost.userId !== session.user.id) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+      } else {
+        // If it's not an OrganizerHackathon, reject (legacy Hackathon postings don't have applications in the new model)
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
       }
+      postFilter = { postId };
     } else {
-      const legacy = await prisma.hackathon.findUnique({ where: { id: postId } });
-      if (!legacy || legacy.userId !== session.user.id) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      // No postId: gather owned organizer hackathon ids and fetch applications for them
+  const ownedPosts = (await (prisma as any).organizerHackathon.findMany({ where: { userId: session.user.id }, select: { id: true } })) as { id: string }[];
+  const ids = ownedPosts.map((p) => p.id);
+      if (ids.length === 0) {
+        return NextResponse.json({ applications: [] }, { status: 200 });
       }
+      postFilter = { postId: { in: ids } };
     }
 
     const applications = await prisma.application.findMany({
-      where: { postId },
+      where: postFilter,
       include: {
         user: {
           select: {
@@ -68,3 +72,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+ 

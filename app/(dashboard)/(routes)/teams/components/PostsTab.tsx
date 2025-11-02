@@ -52,15 +52,17 @@ useEffect(() => {
     console.log("POSTSS", posts);
 }, [posts]);
 
-  const matchSearch = (val:string) =>{
-    return val.toLowerCase().includes(search.toLowerCase())
+  const matchSearch = (val: string | undefined | null) => {
+    const left = (val ?? '').toString().toLowerCase();
+    const right = (search ?? '').toString().toLowerCase();
+    return left.includes(right);
   }
 
-  const filteredPosts = posts?.filter((post) => {
-    const matchesSearch = matchSearch(post.teamName) || matchSearch(post.hackathonName) || matchSearch(post.location) || matchSearch(post.experience) || matchSearch(post.hackathonMode) || matchSearch(post.role) || post.skills.some(s => matchSearch(s));
-    const matchesMode = modeOptions.length ? modeOptions.some(m => post.hackathonMode.toLowerCase().includes(m.toLowerCase())) : true;
-    const matchesRole = expOptions.length ? expOptions.some(e => post.experience.toLowerCase().includes(e.toLowerCase())) : true;
-    const matchesSkills = skillOptions.length ? skillOptions.some(skill => post.skills.some(s => s.toLowerCase().includes(skill.toLowerCase()))) : true;
+  const filteredPosts = posts?.filter((post: any) => {
+    const matchesSearch = matchSearch(post?.teamName) || matchSearch(post?.hackathonName) || matchSearch(post?.location) || matchSearch(post?.experience) || matchSearch(post?.hackathonMode) || matchSearch(post?.role) || (post?.skills ?? []).some((s: any) => matchSearch(s));
+    const matchesMode = modeOptions.length ? modeOptions.some(m => (post?.hackathonMode ?? '').toString().toLowerCase().includes(m.toLowerCase())) : true;
+    const matchesRole = expOptions.length ? expOptions.some(e => (post?.experience ?? '').toString().toLowerCase().includes(e.toLowerCase())) : true;
+    const matchesSkills = skillOptions.length ? skillOptions.some(skill => (post?.skills ?? []).some((s: any) => (s ?? '').toString().toLowerCase().includes((skill ?? '').toString().toLowerCase()))) : true;
 
     return matchesSearch && (matchesMode && matchesRole && matchesSkills);
   });

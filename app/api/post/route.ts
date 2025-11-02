@@ -22,6 +22,7 @@ export async function POST(req: Request) {
     // }
 
     const {
+      teamName,
       hackathonName,
       regURL,
       hackathonMode,
@@ -29,7 +30,27 @@ export async function POST(req: Request) {
       regDate,
       location,
       description,
+      skills,
+      role,
+      experience,
     } = body;
+
+    // Basic validation
+    if (!hackathonName || !regURL || !hackathonMode || !memberCount || !regDate) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Normalize skills to string[]
+    const normalizedSkills = Array.isArray(skills)
+      ? skills.map((s: any) => String(s))
+      : typeof skills === 'string' && skills.length
+      ? skills.split(',').map(s => s.trim())
+      : [];
+
+    const parsedDate = new Date(regDate);
+    if (isNaN(parsedDate.getTime())) {
+      return NextResponse.json({ error: 'Invalid regDate' }, { status: 400 });
+    }
 
     // Ensure the posting user exists (some auth flows may not have created a User row yet)
     await prisma.user.upsert({
@@ -47,13 +68,19 @@ export async function POST(req: Request) {
 
     const organizerHackathon = await prisma.organizerHackathon.create({
       data: {
+        // use undefined for omitted optional fields so Prisma doesn't try to set nulls explicitly
+        teamName: teamName ?? undefined,
         hackathonName,
         regURL,
         hackathonMode,
         memberCount,
-        regDate: new Date(regDate),
+        regDate: parsedDate,
         location,
         description,
+        // optional team-related fields
+        skills: normalizedSkills,
+        role: role ?? undefined,
+        experience: experience ?? undefined,
         userId: session.user.id,
       },
     });
