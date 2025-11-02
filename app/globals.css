@@ -1,0 +1,215 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    --text: #010305;
+    --background: #fdfdfd;
+    --primary: #154b79;
+    --secondary: #66aff0;
+    --accent: #056fcc;
+    --foreground: hsl(222.2 84% 4.9%);
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(222.2 84% 4.9%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222.2 84% 4.9%);
+    --primary-foreground: hsl(210, 56%, 77%);
+    --secondary-foreground: hsl(222.2 47.4% 11.2%);
+    --muted: hsl(210 40% 96.1%);
+    --muted-foreground: hsl(215.4 16.3% 46.9%);
+    --accent-foreground: hsl(222.2 47.4% 11.2%);
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(210 40% 98%);
+    --border: hsl(214.3 31.8% 91.4%);
+    --input: hsl(214.3 31.8% 91.4%);
+    --ring: hsl(221.2 83.2% 53.3%);
+    --radius: 0.5rem;
+    --chart-1: hsl(12 76% 61%);
+    --chart-2: hsl(173 58% 39%);
+    --chart-3: hsl(197 37% 24%);
+    --chart-4: hsl(43 74% 66%);
+    --chart-5: hsl(27 87% 67%);
+    --inputGray: #e5e7eb;
+    --clickWhite: #c6ebff;
+    --bgActive: #ace2ff;
+    --ellipse: #ffffff;
+    --bgShapeColor: #0600b0;
+    /* Scrollbar Colors - Light Mode */
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #66aff0;
+    --scrollbar-thumb-hover: #154b79;
+  }
+
+  .dark {
+    --text: #e1ecf4;
+    --background: #03070c;
+    --primary: #86bbea;
+    --secondary: #0f5999;
+    --accent: #339dfa;
+    --foreground: hsl(210 40% 98%);
+    --card: hsl(222.2 84% 4.9%);
+    --card-foreground: hsl(210 40% 98%);
+    --popover: hsl(222.2 84% 4.9%);
+    --popover-foreground: hsl(210 40% 98%);
+    --primary-foreground: #041234;
+    --secondary-foreground: hsl(210 40% 98%);
+    --muted: hsl(217.2 32.6% 17.5%);
+    --muted-foreground: hsl(215 20.2% 65.1%);
+    --accent-foreground: hsl(210 40% 98%);
+    --destructive: hsl(0 62.8% 30.6%);
+    --destructive-foreground: hsl(210 40% 98%);
+    --border: hsl(217.2 32.6% 17.5%);
+    --input: hsl(217.2 32.6% 17.5%);
+    --ring: hsl(224.3 76.3% 48%);
+    --chart-1: hsl(220 70% 50%);
+    --chart-2: hsl(160 60% 45%);
+    --chart-3: hsl(30 80% 55%);
+    --chart-4: hsl(280 65% 60%);
+    --chart-5: hsl(340 75% 55%);
+    --clickWhite: #ffffff;
+    --inputGray: #111827;
+    --bgActive: #002a4071;
+    --ellipse: #000000;
+    --bgShapeColor: #5feaff;
+    /* Scrollbar Colors - Dark Mode */
+    --scrollbar-track: #111827;
+    --scrollbar-thumb: #0f5999;
+    --scrollbar-thumb-hover: #339dfa;
+  }
+}
+
+/* Custom Scrollbar Styling */
+/* Webkit Browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: var(--radius);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius);
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* For Edge and IE */
+body {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+@layer components {
+  .button-86::after,
+  .button-86::before {
+      @apply absolute bottom-0 right-0 transition-all duration-300;
+      content: '';
+      z-index: -99999;
+      }
+  
+      .button-86::before {
+      transform: translate(0%, 0%);
+      width: 100%;
+      height: 100%;
+      background: #28282d;
+      border-radius: 10px;
+      }
+  
+      .button-86::after {
+      transform: translate(10px, 10px);
+      width: 35px;
+      height: 35px;
+      background: #ffffff15;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border-radius: 50px;
+      }
+  
+      .button-86:hover::before {
+      transform: translate(5%, 20%);
+      width: 110%;
+      height: 110%;
+      }
+  
+      .button-86:hover::after {
+      border-radius: 10px;
+      transform: translate(0, 0);
+      width: 100%;
+      height: 100%;
+      }
+  
+      .button-86:active::after {
+      transition: 0s;
+      transform: translate(0, 5%);
+      }
+  }
+
+*, body{
+  font-family: "Manrope", sans-serif;
+}
+
+input{
+  text-decoration: none;
+  background-color: var(--inputGray);
+  min-height: 50px;
+}
+
+.background-shape {
+  --color: var(--bgShapeColor);
+  /* --color: #5feaff;
+  --color: #0600b0; */
+  width: 100%;
+  pointer-events: none; 
+  position: relative;
+  z-index: -2;
+  margin: 0 auto;
+  height: 45rem;
+  overflow: hidden;
+  background-color: var(--background);
+  mask-image: radial-gradient(ellipse at center center, #000 , transparent 50%);
+  margin-top: -18.8rem;
+}
+
+/* 339dfa */
+/* 056fcc */
+
+.background-shape::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0.4;
+  background-image: radial-gradient(circle at bottom center, var(--color), transparent 85%);
+  background-color: var(--background);
+}
+
+.background-shape::after {
+  content: '';
+  position: absolute;
+  left: -50%;
+  top: 50%;
+  aspect-ratio: 1 / 0.7;
+  width: 200%;
+  border-top: 1px solid hsl(var(--border));
+  background-color: var(--background);
+  border-radius: 50%;
+}

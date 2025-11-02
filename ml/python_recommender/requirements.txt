@@ -1,0 +1,8 @@
+requests
+beautifulsoup4
+sentence-transformers
+PyPDF2
+tqdm
+numpy
+scikit-learn
+pandas
