@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import unstop from '@/app/assets/unstop.png'
 import devpost from '@/app/assets/devpost.svg'
 import devfolio from '@/app/assets/Devfolio.svg'
@@ -63,7 +64,7 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
             onFavoriteChange();
         }
     };
-    const [showApplyModal, setShowApplyModal] = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
     const [linkedinInput, setLinkedinInput] = useState('');
     const [githubInput, setGithubInput] = useState('');
     const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -81,9 +82,22 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
       setShowApplyModal(true);
     };
 
+    const [applyError, setApplyError] = useState<string | null>(null);
+
+    // prevent background scrolling when modal is open
+    useEffect(() => {
+      if (showApplyModal) {
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => { document.body.style.overflow = prev; };
+      }
+      return;
+    }, [showApplyModal]);
+
     const submitApplication = async (e?: React.FormEvent) => {
       e?.preventDefault();
       setApplying(true);
+      setApplyError(null);
       try {
         const form = new FormData();
         form.append('candidateId', session!.user!.id as string);
@@ -93,14 +107,19 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
         if (resumeFile) form.append('resume', resumeFile);
 
         const res = await fetch('/api/apply', { method: 'POST', body: form });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || 'Failed to apply');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = data?.error || data?.message || `Failed to apply (status ${res.status})`;
+          setApplyError(msg);
+          throw new Error(msg);
+        }
         setApplied(true);
         setShowApplyModal(false);
         // optionally notify parent
       } catch (err: any) {
         console.error('Apply error', err);
-        alert(err?.message || 'Failed to apply');
+        // show inline error
+        setApplyError(err?.message || 'Failed to apply');
       } finally {
         setApplying(false);
       }
@@ -248,31 +267,49 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
 
       {/* Apply modal */}
       {showApplyModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50' onClick={() => setShowApplyModal(false)}>
-          <div className='bg-white dark:bg-gray-900 p-6 rounded shadow max-w-md w-full' onClick={(e) => e.stopPropagation()}>
-            <h3 className='text-lg font-semibold mb-2'>Apply for {title}</h3>
-            <form onSubmit={submitApplication} className='space-y-3'>
-              <div>
-                <label className='text-sm block mb-1'>LinkedIn (optional)</label>
-                <input value={linkedinInput} onChange={(e)=>setLinkedinInput(e.target.value)} className='w-full input' placeholder='https://linkedin.com/in/...' />
-              </div>
-              <div>
-                <label className='text-sm block mb-1'>GitHub (optional)</label>
-                <input value={githubInput} onChange={(e)=>setGithubInput(e.target.value)} className='w-full input' placeholder='https://github.com/...' />
-              </div>
-              <div>
-                <label className='text-sm block mb-1'>Resume (optional)</label>
-                <input type='file' onChange={(e)=> setResumeFile(e.target.files ? e.target.files[0] : null)} className='w-full' />
-              </div>
-              <div className='flex justify-end space-x-2'>
-                <button type='button' onClick={() => setShowApplyModal(false)} className='px-3 py-1 rounded border'>Cancel</button>
-                <button type='submit' disabled={applying} className='px-3 py-1 rounded bg-primary text-white'>
-                  {applying ? 'Applying...' : 'Submit Application'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        // render modal as a portal to body to ensure it sits above all other content
+        typeof document !== 'undefined' ? (
+          // lazy-create a modal-root if not present
+          (() => {
+            let root = document.getElementById('modal-root');
+            if (!root) {
+              root = document.createElement('div');
+              root.id = 'modal-root';
+              document.body.appendChild(root);
+            }
+            return (
+              createPortal(
+                <div className='fixed inset-0 z-[99999] flex items-center justify-center bg-black/60' onClick={() => setShowApplyModal(false)}>
+                  <div className='bg-white dark:bg-gray-900 p-6 rounded shadow max-w-md w-full mx-4' onClick={(e) => e.stopPropagation()} role='dialog' aria-modal='true'>
+                    <h3 className='text-lg font-semibold mb-2'>Apply for {title}</h3>
+                    {applyError && <div className='text-sm text-red-600 mb-2'>{applyError}</div>}
+                    <form onSubmit={submitApplication} className='space-y-3'>
+                      <div>
+                        <label className='text-sm block mb-1'>LinkedIn (optional)</label>
+                        <input value={linkedinInput} onChange={(e)=>setLinkedinInput(e.target.value)} className='w-full input' placeholder='https://linkedin.com/in/...' />
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>GitHub (optional)</label>
+                        <input value={githubInput} onChange={(e)=>setGithubInput(e.target.value)} className='w-full input' placeholder='https://github.com/...' />
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>Resume (optional)</label>
+                        <input type='file' onChange={(e)=> setResumeFile(e.target.files ? e.target.files[0] : null)} className='w-full' />
+                      </div>
+                      <div className='flex justify-end space-x-2'>
+                        <button type='button' onClick={() => setShowApplyModal(false)} className='px-3 py-1 rounded border'>Cancel</button>
+                        <button type='submit' disabled={applying} className='px-3 py-1 rounded bg-primary text-white'>
+                          {applying ? 'Applying...' : 'Submit Application'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>,
+                root
+              )
+            );
+          })()
+        ) : null
       )}
     </motion.div>
   )

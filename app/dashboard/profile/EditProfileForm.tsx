@@ -52,9 +52,11 @@ const EditProfileForm = ({ setIsOpen } : { setIsOpen:React.Dispatch<React.SetSta
       ...data,
       skills: formatSkillsData(data.skills),
     };
-    dispatch(setUser(data));
+    // update local store with normalized skills
+    dispatch(setUser(skillData));
     try {
-      const response = await axios.post("/api/user", data);
+      // send normalized payload to API (API expects either { user } or raw user object)
+      const response = await axios.post("/api/user", { user: skillData });
       if (response.status === 200) {
         toast.success("Profile Updated Succesfully successfully!");
         setIsOpen(false);

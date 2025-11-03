@@ -354,7 +354,7 @@ function ApplyComponent ({
                     Apply as a teammate
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+                <DialogContent className="sm:max-w-[625px] z-[99999]">
                                 <DialogHeader>
                                         <DialogTitle>Apply as a teammate</DialogTitle>
                                         {/* Show basic post details in the dialog header so applicants see the team info */}
@@ -391,7 +391,6 @@ function ApplyComponent ({
                                 value={linkedinUrl}
                                 onChange={(e) => setLinkedinUrl(e.target.value)}
                                 className="col-span-3"
-                                required
                             />
                         </div>
 
@@ -405,7 +404,6 @@ function ApplyComponent ({
                                 value={githubUrl}
                                 onChange={(e) => setGithubUrl(e.target.value)}
                                 className="col-span-3"
-                                required
                             />
                         </div>
 
@@ -425,7 +423,6 @@ function ApplyComponent ({
                                     onChange={handleResumeChange}
                                     className="col-span-3"
                                     accept=".pdf,.doc,.docx"
-                                    required
                                 />
                             )}
                         </div>

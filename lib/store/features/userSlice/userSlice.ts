@@ -50,7 +50,8 @@ export const fetchUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.get(`/api/user?id=${userId}`);
-      const userData = response.data;
+      // API may return { user: {...} } or the raw user object — normalize here
+      const userData = response.data?.user ?? response.data;
 
       // Ensure we're returning the correct shape of data
       return {

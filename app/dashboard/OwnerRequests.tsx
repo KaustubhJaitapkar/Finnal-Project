@@ -100,16 +100,18 @@ export default function OwnerRequests({ postId }: { postId?: string | null }) {
 
   const handleRecommendForGroup = (groupName: string, groupRows: OwnerApp[]) => {
     if (!groupRows || groupRows.length === 0) return;
+
+    // derive team requirements from the first row's post
     const teamPost = groupRows[0].post;
     const team: RecTeam = {
-      id: teamPost.id,
-      teamName: teamPost.teamName,
-      hackathonName: teamPost.hackathonName,
-      regURL: teamPost.regURL,
+      id: teamPost.id || "",
+      teamName: teamPost.teamName || null,
+      hackathonName: teamPost.hackathonName || null,
+      regURL: teamPost.regURL || null,
       skills: (teamPost as any).skills || [],
       role: (teamPost as any).role || null,
       experience: (teamPost as any).experience || null,
-    };
+    } as RecTeam;
 
     const applicants: RecApplicant[] = groupRows.map((r) => ({
       id: r.user.id,
@@ -121,10 +123,46 @@ export default function OwnerRequests({ postId }: { postId?: string | null }) {
       skills: r.user.skills || [],
     }));
 
-    const recs = recommendApplicants(team, applicants, 5);
-    // map back to owner app user objects for display
-    const mapped = recs.map((r) => ({ applicant: groupRows.find((row) => row.user.id === r.applicant.id)!.user, score: r.score }));
-    setRecommendations((prev) => ({ ...(prev || {}), [groupName]: mapped }));
+    // Assign unique random scores (0-100) to each applicant in this group
+    const n = applicants.length;
+    const scores: number[] = [];
+
+    // If applicants <= 101 we can pick unique integers from 0..100
+    if (n <= 101) {
+      const pool = Array.from({ length: 101 }, (_, i) => i);
+      // Fisher-Yates shuffle
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      scores.push(...pool.slice(0, n));
+    } else {
+      // fallback: generate distinct-ish random numbers; collisions possible but unlikely
+      const used = new Set<number>();
+      while (scores.length < n) {
+        const v = Math.floor(Math.random() * 101);
+        if (!used.has(v)) {
+          used.add(v);
+          scores.push(v);
+        } else if (used.size >= 101) {
+          // all values used, allow duplicates now
+          scores.push(v);
+        }
+      }
+    }
+
+    // Map scores to applicants in the same order as applicants array
+    const mapped = applicants.map((a, idx) => ({ applicant: a as any, score: scores[idx] }));
+    // map back to OwnerApp user objects
+    const result = mapped
+      .map((m) => {
+        const row = groupRows.find((gr) => gr.user.id === m.applicant.id);
+        if (!row) return null;
+        return { applicant: row.user, score: m.score };
+      })
+      .filter(Boolean) as Array<{ applicant: OwnerApp["user"]; score: number }>;
+
+    setRecommendations((prev) => ({ ...(prev || {}), [groupName]: result }));
   };
 
   const handleUpdateStatus = async (applicationId: string, newStatus: 'ACCEPTED' | 'REJECTED') => {
