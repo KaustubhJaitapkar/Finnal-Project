@@ -3,12 +3,6 @@
   The ultimate platform to find teammates for hackathons — globally 🌍
 </p>
 
-<p align="center">
-  <a href="https://gssoc.girlscript.tech/">
-    <img src="https://user-images.githubusercontent.com/92252895/257558544-590cfc18-b194-4940-8684-75d803fac85e.png" alt="GSSoC'25 Banner" width="80%" />
-  </a>
-</p>
-
 ---
 
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/harsh3dev/HackMate?utm_source=oss&utm_medium=github&utm_campaign=harsh3dev%2FHackMate&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
@@ -128,53 +122,3 @@ Visit `http://localhost:3000` in your browser.
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Here’s a quick guide to get started:
-
-```bash
-# Fork the repository
-
-# Create your feature branch
-git checkout -b feature/your-feature
-
-# Commit your changes
-git commit -m "Add: your feature"
-
-# Push to GitHub
-git push origin feature/your-feature
-```
-
-Then, open a pull request 🚀
-
-Please ensure your code adheres to the project style and includes appropriate test coverage. See [CONTRIBUTING.md](CONTRIBUTING.md) and [Code of Conduct](CodeOfConduct.md) for more info.
-
----
-
-## 📬 Contact
-
-* **Discord:** `@harsh3dev`
-* **Email:** [harshpandey.tech@gmail.com](mailto:harshpandey.tech@gmail.com) | [yaahg342@gmail.com](mailto:yaahg342@gmail.com)
-* **LinkedIn:** [Harsh Pandey](https://www.linkedin.com/in/harsh3dev/) • [Yash Gupta](https://www.linkedin.com/in/yash-gupta-64956b246/)
-
----
-
-## 👥 Project Contributors
-
-A huge thanks to all contributors who made HackMate possible:
-
-<h3>Project Contributers: <h3>
-<a href="https://github.com/harsh3dev/HackMate/graphs/contributors">
-<img src="https://contributors-img.web.app/image?repo=harsh3dev/HackMate"/>
----
-
-## 📝 License
-
-This project is licensed under the [MIT License](LICENSE).
-
-```
-Built with ☕️, 💻, and plenty of caffeine.
-💡 *Pro tip: Your perfect team might be one pull request away.*
-
-
-```
