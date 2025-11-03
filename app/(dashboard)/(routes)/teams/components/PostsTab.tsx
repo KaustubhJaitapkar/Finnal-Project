@@ -68,14 +68,16 @@ useEffect(() => {
   });
 
   return (
-    <div className='w-full min-h-[50vh] grid sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 flex-wrap '>
+    <div className='w-full min-h-[50vh]'>
 
       {loading ? (
         <Loading />
       ) : filteredPosts && filteredPosts.length > 0 ? (
         <div className='w-full grid sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4'>
           {filteredPosts.map((entry, index) => (
-            <PostCard entry={entry} key={index} />
+            <div key={index} className="w-full">
+              <PostCard entry={entry} />
+            </div>
           ))}
         </div>
       ) : (

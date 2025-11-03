@@ -60,7 +60,7 @@ const PostCard: React.FC<PostCardProps> = ({ entry, className }) => {
   }
 
   return (
-    <div className='min-w-[20vw] min-h-[20vh] px-5 py-4 flex flex-col justify-between items-start rounded-lg border border-gray-500 dark:border-gray-800 dark:backdrop-blur-xl transition-all ease-linear hover:border-accent hover:dark:border-accent dark:bg-gray-900/60 hover:dark:bg-blue-900/30 bg-sky-100/70 hover:bg-sky-300/40  '>      
+  <div className='w-full h-full px-5 py-4 flex flex-col justify-between items-start rounded-lg border border-gray-500 dark:border-gray-800 dark:backdrop-blur-xl transition-all ease-linear hover:border-accent hover:dark:border-accent dark:bg-gray-900/60 hover:dark:bg-blue-900/30 bg-sky-100/70 hover:bg-sky-300/40  '>      
       <div className='w-full flex flex-col justify-between items-start rounded-lg '>
         <div className=' w-full flex justify-between items-center'>
           <div className="flex items-center gap-2">
@@ -124,8 +124,10 @@ const PostCard: React.FC<PostCardProps> = ({ entry, className }) => {
           {timeDifference(entry.createdAt)}
         </span>
 
-        <Button className=' bg-primary dark:bg-primary hover:bg-secondary dark:hover:bg-secondary text-white dark:text-gray-950 dark:hover:text-white font-medium dark:font-bold transition-colors ease-in-out ' >
-          <Link href={`/teams/${entry.id}`} >
+        {/* Use asChild so the Button styles are applied to the Link element
+            (avoids putting an <a> inside a <button> which can cause layout/overlap issues) */}
+        <Button asChild className=' bg-primary dark:bg-primary hover:bg-secondary dark:hover:bg-secondary text-white dark:text-gray-950 dark:hover:text-white font-medium dark:font-bold transition-colors ease-in-out '>
+          <Link href={`/teams/${entry.id}`} className="block text-center px-3 py-2">
             Apply Now
           </Link>
         </Button>

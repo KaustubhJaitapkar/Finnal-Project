@@ -151,19 +151,22 @@ export default function Page({ params }: { params: { id: string } }) {
     const getSPostData = async ()  => {
         try {
           setLoading(true);
-          const id = params.id;
-          const res = await axios.post('/api/id', { id: id });
-          console.log("response",res);
-          if (!res.data) {
-              return;
-          }
-           console.log("posts",res.data.hackathon); 
-           const userId = res.data.hackathon.userId;
-            console.log("userId",userId);
-            const user = await axios.get(`/api/user?id=${userId}`);
-            setUser(user.data.user);
-            console.log("user",user.data);
-           setPost(res.data.hackathon);
+                    const id = params.id;
+                    // Fetch organizer-posted team entries and pick the one with matching id.
+                    const res = await axios.get('/api/teams');
+                    const posts = res.data?.Hackathon || res.data?.posts || [];
+                    const found = posts.find((p: any) => String(p.id) === String(id));
+                    if (!found) {
+                        console.warn('Team post not found for id', id);
+                        setPost(undefined);
+                        return;
+                    }
+                    const userId = found.userId || found.user?.id;
+                    if (userId) {
+                        const user = await axios.get(`/api/user?id=${userId}`);
+                        setUser(user.data.user);
+                    }
+                    setPost(found);
         } 
         catch (error) {
           console.error('Error fetching post data:', error);
@@ -234,9 +237,11 @@ export default function Page({ params }: { params: { id: string } }) {
 
                             <h1 className='font-semibold text-gray-800/100 dark:text-gray-300/100 '>Position: <span className='font-bold text-lg lg:text-xl  text-text font-mono '>{post?.role} with {post?.experience}</span> of experience. </h1>
 
-                            <h1 className='flex items-center justify-start gap-2 font-semibold flex-wrap text-gray-800/100 dark:text-gray-300/100  '>Skills: {post?.skills.map((skill:string, index:number)=>(
-                                <span key={index} className='p-1 px-2 rounded-full text-text text-base border border-text dark:border-text'>{skill}</span>
-                            ))}</h1>
+                                                        <h1 className='flex items-center justify-start gap-2 font-semibold flex-wrap text-gray-800/100 dark:text-gray-300/100  '>
+                                                            Skills: {(post?.skills ?? []).map((skill:string, index:number)=>(
+                                                                <span key={index} className='p-1 px-2 rounded-full text-text text-base border border-text dark:border-text'>{skill}</span>
+                                                            ))}
+                                                        </h1>
                             
                             <p className=' rounded-md my-8 p-4 mr-1 w-full border md:pl-8 '>
                                 <h1 className='w-full font-semibold  underline underline-offset-4 decoration-dashed mb-2  '>Description:</h1>
@@ -249,6 +254,7 @@ export default function Page({ params }: { params: { id: string } }) {
                             </Button>
                             :
                             <ApplyComponent
+                                post={post}
                                 isApplyDialogOpen={isApplyDialogOpen}
                                 setIsApplyDialogOpen={setIsApplyDialogOpen}
                                 linkedinUrl={linkedinUrl}
@@ -313,32 +319,34 @@ function ContactDetails({post, user}: {post: HackathonEntry, user: any}) {
   }
 
 function ApplyComponent ({
-    isApplyDialogOpen,
-    setIsApplyDialogOpen,
-    linkedinUrl,
-    setLinkedinUrl,
-    githubUrl,
-    setGithubUrl,
-    resume,
-    setResume,
-    resumeUrl,
-    setResumeUrl,
-    applied,
-    handleResumeChange,
-    }:{
-    isApplyDialogOpen: boolean,
-    setIsApplyDialogOpen: (isOpen: boolean) => void,
-    linkedinUrl: string,
-    setLinkedinUrl: (linkedinUrl: string) => void,
-    githubUrl: string,
-    setGithubUrl: (githubUrl: string) => void,
-    resume: File | null,
-    setResume: (resume: File | null) => void,
-    resumeUrl: string,
-    setResumeUrl: (resumeUrl: string) => void,
-    applied: (e: React.FormEvent<HTMLFormElement>) => void,
-    handleResumeChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-    }) {
+        post,
+        isApplyDialogOpen,
+        setIsApplyDialogOpen,
+        linkedinUrl,
+        setLinkedinUrl,
+        githubUrl,
+        setGithubUrl,
+        resume,
+        setResume,
+        resumeUrl,
+        setResumeUrl,
+        applied,
+        handleResumeChange,
+        }:{
+        post?: HackathonEntry | undefined,
+        isApplyDialogOpen: boolean,
+        setIsApplyDialogOpen: (isOpen: boolean) => void,
+        linkedinUrl: string,
+        setLinkedinUrl: (linkedinUrl: string) => void,
+        githubUrl: string,
+        setGithubUrl: (githubUrl: string) => void,
+        resume: File | null,
+        setResume: (resume: File | null) => void,
+        resumeUrl: string,
+        setResumeUrl: (resumeUrl: string) => void,
+        applied: (e: React.FormEvent<HTMLFormElement>) => void,
+        handleResumeChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+        }) {
     return (
         <Dialog open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
             <DialogTrigger asChild>
@@ -347,9 +355,28 @@ function ApplyComponent ({
                 </Button>
             </DialogTrigger>
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Apply as a teammate</DialogTitle>
-                </DialogHeader>
+                                <DialogHeader>
+                                        <DialogTitle>Apply as a teammate</DialogTitle>
+                                        {/* Show basic post details in the dialog header so applicants see the team info */}
+                                        {post && (
+                                            <div className="mt-2 text-sm text-gray-600">
+                                                <div className="font-semibold">{post.teamName || post.hackathonName}</div>
+                                                <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                                    {post.location && <span>{post.location}</span>}
+                                                    {post.role && <span>• {post.role}</span>}
+                                                    {post.experience && <span>• {post.experience}</span>}
+                                                </div>
+                                                {post.skills && post.skills.length > 0 && (
+                                                    <div className="mt-2 flex flex-wrap gap-2">
+                                                        {post.skills.slice(0,6).map((s: string, i:number) => (
+                                                            <span key={i} className="text-xs px-2 py-1 rounded-full border">{s}</span>
+                                                        ))}
+                                                        {post.skills.length > 6 && <span className="text-xs text-gray-400">+{post.skills.length - 6} more</span>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                </DialogHeader>
 
                 {/* Form to handle the apply submission */}
                 <form onSubmit={applied}>
@@ -417,7 +444,9 @@ function ApplyComponent ({
 }
 
 function formatDate(inputDate: any): string {
+    if (!inputDate) return '—';
     const date = new Date(inputDate);
+    if (Number.isNaN(date.getTime())) return '—';
     const day = date.getUTCDate();
     const month = date.toLocaleString('default', { month: 'long' });
     const year = date.getUTCFullYear();

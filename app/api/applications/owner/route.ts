@@ -54,6 +54,10 @@ export async function GET(req: Request) {
         post: {
           select: {
             id: true,
+            teamName: true,
+            skills: true,
+            role: true,
+            experience: true,
             hackathonName: true,
             regURL: true,
             memberCount: true,
