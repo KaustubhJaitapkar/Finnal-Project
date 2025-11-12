@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     // Parse the request body. Accept both { user } and raw user object payloads.
     const body = await request.json().catch(() => ({}));
     const user = body?.user ?? body;
-    console.log('Updating user with payload keys:', Object.keys(user || {}).join(','));
+    // console.log('Updating user with payload keys:', Object.keys(user || {}).join(','));
 
     // Validate
     if (!user || !user.id) {

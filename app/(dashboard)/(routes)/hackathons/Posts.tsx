@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import unstop from '@/app/assets/unstop.png'
 import devpost from '@/app/assets/devpost.svg'
 import devfolio from '@/app/assets/Devfolio.svg'
+import HackLogo from '@/app/assets/HackMate.svg'
 import { LuExternalLink } from "react-icons/lu";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import Image from 'next/image'
@@ -181,12 +182,18 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
       >
         <div className='flex items-start space-x-3'>
           <div className='relative w-10 h-10'>
-            <Image src={Logo !== null ? Logo : 
-              platform==='unstop' ? unstop : 
-              platform==='devpost' ? devpost : 
-              platform==='devfolio' ? devfolio : 
-              ''
-            } alt={platform} layout='fill' objectFit='contain' className='rounded-full' />
+            {(() => {
+              const imageSrc = Logo !== null ? Logo :
+                platform === 'unstop' ? unstop :
+                platform === 'devpost' ? devpost :
+                platform === 'devfolio' ? devfolio :
+                platform === 'organizer' ? HackLogo :
+                '';
+
+              return (
+                <Image src={imageSrc as any} alt={platform} fill style={{ objectFit: 'contain' }} className='rounded-full' />
+              );
+            })()}
           </div>
           <div className='flex flex-col'>
             <h3 className='text-lg font-semibold pr-8'>{title}</h3>

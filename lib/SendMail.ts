@@ -110,10 +110,10 @@ export async function sendVerificationEmail(email:string, token:string) {
 		</body>
 		</html>`
     );
-		console.log("Email sent successfully: ", mailResponse?.response);
+		// console.log("Email sent successfully: ", mailResponse?.response);
 	} 
 	catch (error) {
-		console.log("Error occurred while sending email: ", error);
+		// console.log("Error occurred while sending email: ", error);
 		throw error;
 	}
 }
@@ -129,10 +129,10 @@ export async function sendPasswordResetEmail(email:string, token:string) {
 			"Reset your password",
 			`<p>Click <a href="${confirmLink}">here</a> to to reset your password.</p>`,
 		);
-		console.log("Email sent successfully: ", mailResponse?.response);
+		// console.log("Email sent successfully: ", mailResponse?.response);
 	} 
 	catch (error) {
-		console.log("Error occurred while sending email: ", error);
+		// console.log("Error occurred while sending email: ", error);
 		throw error;
 	}
 }

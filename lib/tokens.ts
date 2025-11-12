@@ -65,7 +65,7 @@ export const generateVerificationToken = async (email: string) => {
     });
   }
    
-  console.log("entered in token data")
+  // console.log("entered in token data")
   const verificationToken = await prisma.verificationToken.create({
     data: {
       email,
@@ -73,7 +73,7 @@ export const generateVerificationToken = async (email: string) => {
       expires,
     },
   });
-  console.log("outside of token data",verificationToken)
+  // console.log("outside of token data",verificationToken)
 
   return verificationToken;
 };

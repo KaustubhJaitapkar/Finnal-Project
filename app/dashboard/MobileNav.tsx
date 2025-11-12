@@ -154,23 +154,6 @@ const MobileNav = () => {
                         }
                     </nav>
 
-                    <div className=' w-full flex flex-col gap-2 items-center justify-center'>
-                        <div className=' w-full flex items-center justify-center gap-2 '>
-                            <Button variant="outline" className=' flex justify-center items-center gap-2 w-full ' >
-                            <IoLogoGithub />
-                            Github
-                            </Button>
-                            <Button variant="outline" className=' flex justify-center items-center gap-2 w-full ' >
-                            <MdEmail />
-                            Support
-                            </Button>
-                        </div>
-                        <Button onClick={handleLogout} variant="destructive" className=' w-full flex justify-center items-center gap-2 ' >
-                            Logout
-                            <IoMdLogOut />
-                        </Button>
-                    </div>
-
                 </SheetContent>
             </Sheet>
         </>

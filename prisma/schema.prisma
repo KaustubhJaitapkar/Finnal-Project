@@ -172,3 +172,18 @@ model VerificationToken {
   @@unique([email, token])
 }
 
+
+// Recommendations saved by the automated recommender for a team
+model Recommendation {
+  id           String   @id @default(cuid())
+  teamId       String
+  applicantId  String
+  score        Int
+  details      Json
+  ratedSkills  Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([teamId, applicantId])
+}
+

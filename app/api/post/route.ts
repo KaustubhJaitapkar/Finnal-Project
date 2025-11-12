@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const session = await auth();
-    console.log("incoming",body,session);
+    // console.log("incoming",body,session);
     // const validationResult = hackathonSchema.safeParse(body);
     if(!session?.user.id){
        return NextResponse.json({ error: "Please login to post a hackathon" }, { status: 400 });

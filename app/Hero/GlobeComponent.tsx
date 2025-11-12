@@ -101,7 +101,7 @@ const GlobeComponent = () => {
 
                 </div>
                 <div className=" relative grid place-items-center w-full min-h-[24rem] sm:max-md:mt-14 xl:m-0 sm:min-h-[28rem] lg:h-fit  ">
-                    <Image src={globeimg}  alt="globe" width={400} height={400} layout="intrinsic" className=' ' />
+                    <Image src={globeimg}  alt="globe" width={400} height={400} className=' ' />
                 </div>
             </div>
 

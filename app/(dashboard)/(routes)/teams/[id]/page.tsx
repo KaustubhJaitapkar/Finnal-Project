@@ -222,6 +222,47 @@ export default function Page({ params }: { params: { id: string } }) {
                                         <ContactDetails post={post!} user={user} />
                                     </DialogContent>
                                 </Dialog>
+
+                                {/* Inline owner summary placed next to the hackathon/position details */}
+                                {user && (
+                                    <div className="mt-4 w-full max-w-sm">
+                                        <div className="p-4 border rounded-md bg-white dark:bg-slate-900">
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="w-14 h-14">
+                                                    <AvatarImage src={user.image} alt={user.name} />
+                                                    <AvatarFallback>
+                                                        <User className="h-6 w-6" />
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <div className="font-semibold text-sm">{user.name || user.username}</div>
+                                                    {user.bio && <div className="text-xs text-gray-500">{user.bio}</div>}
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 text-xs">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="truncate">{user.email}</span>
+                                                    <CopyButton text={user.email} />
+                                                </div>
+                                                <div className="mt-2 flex gap-2">
+                                                    {user.linkedinUrl && <Link href={user.linkedinUrl} className="text-xs px-2 py-1 border rounded">LinkedIn</Link>}
+                                                    {user.githubUrl && <Link href={user.githubUrl} className="text-xs px-2 py-1 border rounded">GitHub</Link>}
+                                                </div>
+                                            </div>
+
+                                            {user.skills && user.skills.length > 0 && (
+                                                <div className="mt-3">
+                                                    <div className="text-xs font-medium mb-1">Skills</div>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {user.skills.slice(0,6).map((s:string,i:number)=>(
+                                                            <span key={i} className="text-xs px-2 py-1 rounded-full border">{s}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <Link href={post?.regURL || ""} className='font-semibold text-gray-800/100 dark:text-gray-300/100 ' >Register here: <h1 className='text-primary hover:underline hover:underline-offset-1 dark:text-primary transition-all ease-linear' >{post?.regURL}</h1> </Link> 
@@ -319,8 +360,8 @@ function ContactDetails({post, user}: {post: HackathonEntry, user: any}) {
   }
 
 function ApplyComponent ({
-        post,
-        isApplyDialogOpen,
+    post,
+    isApplyDialogOpen,
         setIsApplyDialogOpen,
         linkedinUrl,
         setLinkedinUrl,
@@ -331,9 +372,9 @@ function ApplyComponent ({
         resumeUrl,
         setResumeUrl,
         applied,
-        handleResumeChange,
+    handleResumeChange,
         }:{
-        post?: HackathonEntry | undefined,
+    post?: HackathonEntry | undefined,
         isApplyDialogOpen: boolean,
         setIsApplyDialogOpen: (isOpen: boolean) => void,
         linkedinUrl: string,
@@ -354,7 +395,7 @@ function ApplyComponent ({
                     Apply as a teammate
                 </Button>
             </DialogTrigger>
-                <DialogContent className="sm:max-w-[625px] z-[99999]">
+        <DialogContent className="sm:max-w-[900px] z-[99999]">
                                 <DialogHeader>
                                         <DialogTitle>Apply as a teammate</DialogTitle>
                                         {/* Show basic post details in the dialog header so applicants see the team info */}
@@ -428,7 +469,6 @@ function ApplyComponent ({
                         </div>
                     </div>
 
-                    {/* Form submit button */}
                     <DialogFooter>
                         <Button type="submit" disabled={!linkedinUrl || !githubUrl || (!resume && !resumeUrl)}>
                             Continue Application

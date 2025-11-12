@@ -9,6 +9,7 @@ import { FaAngleRight } from "react-icons/fa6";
 import Link from 'next/link'
 import Image from 'next/image';
 import ProductHunt from './ProductHunt';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 
@@ -16,6 +17,7 @@ const Hero = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement | null>(null);
 	const router = useRouter();
+	const { data: session, status } = useSession();
 
 	useEffect(() => {
 		function onDoc(e: MouseEvent) {
@@ -41,17 +43,17 @@ const Hero = () => {
 
 				<div className=' -mt-8 flex sm:flex-row flex-col justify-center items-center gap-5 z-[1] '>
 					<div>
-						<button onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} className=" group dark:hover:shadow-[0_4px_14px_0_rgba(20,_243,_232,_0.2)] hover:shadow-[0_6px_20px_rgba(20,_79,_243,_0.5)] px-8 py-6 rounded-md text-white dark:text-slate-900 font-semibold text-lg transition duration-200 ease-linear bg-[rgb(20,175,255)] bg-gradient-to-br dark:from-[rgba(20,175,255,1)] dark:to-rgba(39,116,254,1) from-[rgba(0,198,255,1)] to-[rgba(0,91,255,1)] flex justify-center items-center gap-1 active:outline  active:outline-offset-2 active:outline-2 active:outline-white">
+						<button onClick={() => { setMenuOpen(false); router.push('/choose-role'); }} aria-expanded={menuOpen} className=" group dark:hover:shadow-[0_4px_14px_0_rgba(20,_243,_232,_0.2)] hover:shadow-[0_6px_20px_rgba(20,_79,_243,_0.5)] px-8 py-3 rounded-md text-white dark:text-slate-900 font-semibold text-lg transition duration-200 ease-linear bg-[rgb(20,175,255)] bg-gradient-to-br dark:from-[rgba(20,175,255,1)] dark:to-rgba(39,116,254,1) from-[rgba(0,198,255,1)] to-[rgba(0,91,255,1)] flex justify-center items-center gap-1 active:outline  active:outline-offset-2 active:outline-2 active:outline-white">
 						Get Started
 						<FaAngleRight className=' group-hover:translate-x-1 transition-transform text-sm '/>
 						</button>
 					</div>
-					<Link href={'/teams'} target='_blank' >					
+					{/* <Link href={'/teams'} target='_blank' >					
 						<Button className=" group shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(93,93,93,23%)]  px-8 py-6 rounded-md text-gray-900 dark:text-gray-800 font-semibold text-lg bg-transparent border-2 dark:border-0 border-secondary dark:bg-[#f2f2f2] hover:bg-transparent transition duration-200 ease-linear flex justify-center items-center gap-1 ">
 							Find Teams
 							<FaSearch className=' text-sm '/>
 						</Button>
-					</Link>
+					</Link> */}
 				</div>
 
 				<RetroGrid/>
@@ -68,7 +70,15 @@ const Hero = () => {
 									<h4 className="font-semibold">Participant</h4>
 									<p className="text-sm text-gray-600">Apply to teams, manage applications and find collaborators.</p>
 								</button>
-								<button onClick={() => { setMenuOpen(false); router.push('/login?role=organizer'); }} className="p-4 border rounded hover:shadow-md text-left">
+								<button onClick={() => {
+									setMenuOpen(false);
+									// If user is authenticated, go straight to organizer dashboard
+									if (status === 'authenticated' && session?.user) {
+										router.push('/organizer');
+									} else {
+										router.push('/login?role=organizer');
+									}
+								}} className="p-4 border rounded hover:shadow-md text-left">
 									<h4 className="font-semibold">Organizer</h4>
 									<p className="text-sm text-gray-600">Create and manage hackathons, review applicants and verify participants.</p>
 								</button>

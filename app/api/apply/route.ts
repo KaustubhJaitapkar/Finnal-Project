@@ -22,15 +22,15 @@ export async function POST(req: Request) {
   const postId = form.get('postId') as string;
 
   // Basic logging to aid debugging of form submissions
-  try {
+    try {
     // Use keys() + Array.from to avoid downlevelIteration issues in older TS targets
     const keys = Array.from(form.keys()).map((k) => String(k));
-    console.log('Apply form keys:', keys.join(', '));
+    // console.log('Apply form keys:', keys.join(', '));
   } catch (err) {
     console.error('Failed to enumerate form keys', err);
   }
 
-  console.log('resume type:', resume?.type);
+  // console.log('resume type:', resume?.type);
 
   // Validate required fields early and return helpful errors
   if (!candidateId) {
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     }
 
     if (resume) {
-      console.log("resume type", resume.type);
+  // console.log("resume type", resume.type);
 
       const arrayBuffer = await resume.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
           const localUrl = `/uploads/resumes/${filename}`;
           // Mimic S3 upload result shape enough for downstream code
           uploadResult = { Location: localUrl } as any;
-          console.log('Saved resume to local path', filePath);
+          // console.log('Saved resume to local path', filePath);
         } catch (err) {
           console.error('Failed to save resume locally', err);
           return NextResponse.json({ error: 'Failed to save resume on server.' }, { status: 500 });
@@ -171,7 +171,7 @@ export async function POST(req: Request) {
         // send email but don't block the main success path on failure
         try {
           await mailSender(ownerEmail, subject, body);
-          console.log('Owner notified about new application:', ownerEmail);
+          // console.log('Owner notified about new application:', ownerEmail);
         } catch (err) {
           console.error('Failed to send application notification email to owner', err);
         }

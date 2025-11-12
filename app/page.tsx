@@ -38,13 +38,6 @@ export default function Home() {
 				<Footer/>
 			</main>
 
-			{/* Chatbot Script */}
-			<Script 
-				src="https://widget.cxgenie.ai/widget.js" 
-				data-aid="bea4a27d-4af0-465e-bca3-ffa4c7268c25"
-				data-lang="en"
-				strategy="lazyOnload"
-			/>
 		</>
 	);
 }

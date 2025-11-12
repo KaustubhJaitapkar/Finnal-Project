@@ -5,13 +5,13 @@ export async function POST(req: Request) {
   try {
     
     const idparam = await req.json();
-    console.log("idparam ",idparam);
+    // console.log("idparam ",idparam);
     const  id = idparam.id;
-    console.log("id ",id);
+    // console.log("id ",id);
 
    
 
-    console.log("incoming", id);
+    // console.log("incoming", id);
 
     const hackathon = await prisma.hackathon.findUnique({
       where: {

@@ -38,7 +38,8 @@ export const {
         },
 
         async session({ session, token }) {
-            console.log({ sessiontoken: token, session });
+            // Debug logging removed to avoid leaking session/token info in server logs
+            // console.log({ sessiontoken: token, session });
             if (session.user && token.sub) {
                 session.user.id = token.sub;
             }
