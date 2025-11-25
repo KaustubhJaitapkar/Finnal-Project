@@ -50,6 +50,16 @@ export default function OwnerRequests({ postId }: { postId?: string | null }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<OwnerApp['user'] | null>(null);
 
+  // Helper: find a skill rating in ratedSkills object case-insensitively
+  const findSkillRating = (ratedSkills?: Record<string, any>, skill?: string) => {
+    if (!ratedSkills || !skill) return undefined;
+    const lower = String(skill).toLowerCase();
+    for (const k of Object.keys(ratedSkills || {})) {
+      if (k && String(k).toLowerCase() === lower) return ratedSkills[k];
+    }
+    return undefined;
+  };
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
@@ -372,6 +382,25 @@ export default function OwnerRequests({ postId }: { postId?: string | null }) {
                               {r.matchedSkills.map((s, i) => (
                                 <span key={i} className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full">{s}</span>
                               ))}
+                            </div>
+                          )}
+
+                          {/* Declared applicant skills with proficiency (if available) */}
+                          {(r.applicant?.skills && (r.applicant.skills as string[]).length > 0) && (
+                            <div className="mt-3">
+                              <div className="text-xs text-gray-500 mb-1">Applicant skills</div>
+                              <div className="flex flex-wrap gap-2">
+                                {(r.applicant.skills as string[]).map((skill, si) => {
+                                  const raw = findSkillRating(r.ratedSkills as any, skill);
+                                  const display = raw !== undefined && raw !== null ? String(Math.round(Number(raw))) : '—';
+                                  return (
+                                    <div key={si} className="flex items-center gap-2 text-sm bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded">
+                                      <div className="truncate">{skill}</div>
+                                      <div className="font-mono text-xs text-gray-600 dark:text-gray-400">{display}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
                           )}
 

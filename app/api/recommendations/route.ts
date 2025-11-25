@@ -421,21 +421,30 @@ export async function POST(req: Request) {
       }
     }
 
-    // Only show numeric scores & skills when every applicant received a score
-    const allHaveScores = Array.isArray(scored) && applicants.length > 0 && scored.length === applicants.length && scored.every((s: any) => typeof s.score === 'number');
-
+    // Build recommendations output: always include matchedSkills and ratedSkills when available.
     const recommendationsOut = scored.map((s: any) => {
       const base: any = { applicantId: s.applicantId };
-      if (allHaveScores) {
+      if (typeof s.score === 'number') {
         base.score = s.score;
-        // include matched skills (from details) and any ratedSkills object from the model
-        base.matchedSkills = s.details?.matchedSkills || [];
-        base.ratedSkills = s.ratedSkills || {};
+      }
+      // include matched skills (from details) if present
+      if (s.details && Array.isArray(s.details.matchedSkills)) {
+        base.matchedSkills = s.details.matchedSkills;
+      } else {
+        base.matchedSkills = [];
+      }
+      // include ratedSkills if present
+      if (s.ratedSkills && typeof s.ratedSkills === 'object') {
+        base.ratedSkills = s.ratedSkills;
+      } else {
+        base.ratedSkills = {};
       }
       return base;
     });
 
     const top3 = scored.slice(0, 3).map((s: any) => s.applicantId);
+    // showScores flag indicates whether numeric scores are present for all applicants
+    const allHaveScores = Array.isArray(scored) && applicants.length > 0 && scored.length === applicants.length && scored.every((s: any) => typeof s.score === 'number');
     return NextResponse.json({ recommendations: recommendationsOut, top3, showScores: allHaveScores });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 });

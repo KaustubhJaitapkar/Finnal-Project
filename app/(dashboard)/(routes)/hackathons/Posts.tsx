@@ -71,6 +71,20 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [applying, setApplying] = useState(false);
     const [applied, setApplied] = useState(false);
+    // Additional candidate fields (from screenshot)
+    const [mobile, setMobile] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [gender, setGender] = useState<'female'|'male'|'non-binary'|'other'|'prefer-not-to-say'|'transgender'|'intersex'|'unknown'>('unknown');
+    const [instituteName, setInstituteName] = useState('');
+    const [candidateType, setCandidateType] = useState<'college'|'professional'|'school'|'fresher'>('college');
+    const [domain, setDomain] = useState('Engineering');
+    const [course, setCourse] = useState('B.Tech/BE');
+    const [courseSpecialization, setCourseSpecialization] = useState('');
+    const [graduatingYear, setGraduatingYear] = useState('2026');
+    const [courseDuration, setCourseDuration] = useState('4 Year');
+    const [locationInput, setLocationInput] = useState('');
+    const [agreeTerms, setAgreeTerms] = useState(false);
 
     const openApply = (e?: React.MouseEvent) => {
       e?.preventDefault();
@@ -106,6 +120,20 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
         if (linkedinInput) form.append('linkedinUrl', linkedinInput);
         if (githubInput) form.append('githubUrl', githubInput);
         if (resumeFile) form.append('resume', resumeFile);
+        // Append additional candidate fields
+        if (mobile) form.append('mobile', mobile);
+        if (firstName) form.append('firstName', firstName);
+        if (lastName) form.append('lastName', lastName);
+        if (gender) form.append('gender', gender);
+        if (instituteName) form.append('instituteName', instituteName);
+        if (candidateType) form.append('candidateType', candidateType);
+        if (domain) form.append('domain', domain);
+        if (course) form.append('course', course);
+        if (courseSpecialization) form.append('courseSpecialization', courseSpecialization);
+        if (graduatingYear) form.append('graduatingYear', graduatingYear);
+        if (courseDuration) form.append('courseDuration', courseDuration);
+        if (locationInput) form.append('location', locationInput);
+        form.append('agreeTerms', agreeTerms ? '1' : '0');
 
         const res = await fetch('/api/apply', { method: 'POST', body: form });
         const data = await res.json().catch(() => ({}));
@@ -287,10 +315,104 @@ const Posts:React.FC<PostsProps> = ({id, title, url, logo, platform, mode, locat
             return (
               createPortal(
                 <div className='fixed inset-0 z-[99999] flex items-center justify-center bg-black/60' onClick={() => setShowApplyModal(false)}>
-                  <div className='bg-white dark:bg-gray-900 p-6 rounded shadow max-w-md w-full mx-4' onClick={(e) => e.stopPropagation()} role='dialog' aria-modal='true'>
+                  <div className='bg-white dark:bg-gray-900 p-6 rounded shadow max-w-2xl w-full mx-4 max-h-[80vh] overflow-auto' onClick={(e) => e.stopPropagation()} role='dialog' aria-modal='true'>
                     <h3 className='text-lg font-semibold mb-2'>Apply for {title}</h3>
                     {applyError && <div className='text-sm text-red-600 mb-2'>{applyError}</div>}
-                    <form onSubmit={submitApplication} className='space-y-3'>
+                    <form onSubmit={submitApplication} className='space-y-3 max-h-[70vh] overflow-auto pr-2'>
+                      {/* Candidate details fields (from screenshot) */}
+                      <div>
+                        <label className='text-sm block mb-1'>Email</label>
+                        <input className='w-full input' value={session?.user?.email || ''} disabled />
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>Mobile</label>
+                        <input value={mobile} onChange={(e)=>setMobile(e.target.value)} className='w-full input' placeholder='+91 - 1234567890' />
+                      </div>
+                      <div className='flex gap-2'>
+                        <div className='w-1/2'>
+                          <label className='text-sm block mb-1'>First Name</label>
+                          <input value={firstName} onChange={(e)=>setFirstName(e.target.value)} className='w-full input' />
+                        </div>
+                        <div className='w-1/2'>
+                          <label className='text-sm block mb-1'>Last Name (if applicable)</label>
+                          <input value={lastName} onChange={(e)=>setLastName(e.target.value)} className='w-full input' />
+                        </div>
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>Gender</label>
+                        <div className='flex flex-wrap gap-2'>
+                          {['female','male','transgender','non-binary','intersex','prefer-not-to-say','other'].map(g => (
+                            <button type='button' key={g} onClick={() => setGender(g as any)} className={`px-3 py-1 rounded border ${gender===g? 'bg-primary text-white' : ''}`}>
+                              {g.charAt(0).toUpperCase()+g.slice(1).replace('-', ' ')}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>Institute Name</label>
+                        <input value={instituteName} onChange={(e)=>setInstituteName(e.target.value)} className='w-full input' />
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>Type</label>
+                        <div className='flex gap-2'>
+                          <button type='button' onClick={()=>setCandidateType('college')} className={`px-3 py-1 rounded border ${candidateType==='college' ? 'bg-primary text-white' : ''}`}>College Students</button>
+                          <button type='button' onClick={()=>setCandidateType('professional')} className={`px-3 py-1 rounded border ${candidateType==='professional' ? 'bg-primary text-white' : ''}`}>Professional</button>
+                          <button type='button' onClick={()=>setCandidateType('school')} className={`px-3 py-1 rounded border ${candidateType==='school' ? 'bg-primary text-white' : ''}`}>School Student</button>
+                          <button type='button' onClick={()=>setCandidateType('fresher')} className={`px-3 py-1 rounded border ${candidateType==='fresher' ? 'bg-primary text-white' : ''}`}>Fresher</button>
+                        </div>
+                      </div>
+                      <div className='flex gap-2'>
+                        <div className='w-1/2'>
+                          <label className='text-sm block mb-1'>Domain</label>
+                          <select value={domain} onChange={(e)=>setDomain(e.target.value)} className='w-full input'>
+                            <option>Management</option>
+                            <option>Engineering</option>
+                            <option>Arts & Science</option>
+                            <option>Medicine</option>
+                            <option>Law</option>
+                          </select>
+                        </div>
+                        <div className='w-1/2'>
+                          <label className='text-sm block mb-1'>Course</label>
+                          <select value={course} onChange={(e)=>setCourse(e.target.value)} className='w-full input'>
+                            <option>B.Tech/BE</option>
+                            <option>BA</option>
+                            <option>BSc</option>
+                            <option>MBBS</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>Course Specialization</label>
+                        <input value={courseSpecialization} onChange={(e)=>setCourseSpecialization(e.target.value)} className='w-full input' />
+                      </div>
+                      <div className='flex gap-2 items-center'>
+                        <div>
+                          <label className='text-sm block mb-1'>Graduating Year</label>
+                          <select value={graduatingYear} onChange={(e)=>setGraduatingYear(e.target.value)} className='input'>
+                            <option>2026</option>
+                            <option>2027</option>
+                            <option>2028</option>
+                            <option>2029</option>
+                          </select>
+                        </div>
+                        <div className='ml-4'>
+                          <label className='text-sm block mb-1'>Course Duration</label>
+                          <select value={courseDuration} onChange={(e)=>setCourseDuration(e.target.value)} className='input'>
+                            <option>4 Year</option>
+                            <option>3 Year</option>
+                            <option>2 Year</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className='text-sm block mb-1'>Location</label>
+                        <input value={locationInput} onChange={(e)=>setLocationInput(e.target.value)} className='w-full input' placeholder='City, State, Country' />
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <input id='agree' type='checkbox' checked={agreeTerms} onChange={(e)=>setAgreeTerms(e.target.checked)} />
+                        <label htmlFor='agree' className='text-sm'>I agree to share my data and accept the terms.</label>
+                      </div>
                       <div>
                         <label className='text-sm block mb-1'>LinkedIn (optional)</label>
                         <input value={linkedinInput} onChange={(e)=>setLinkedinInput(e.target.value)} className='w-full input' placeholder='https://linkedin.com/in/...' />
