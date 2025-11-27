@@ -20,6 +20,7 @@ export default function NewHackathon() {
     category: [] as string[],
     festival: '',
     website: '',
+    location: '',
     description: '',
     skills: [] as string[],
     eligibility: {
@@ -193,6 +194,11 @@ export default function NewHackathon() {
                   <div>
                     <label className="block text-sm font-medium mb-1 text-gray-700">Link Festival/Campaign</label>
                     <input value={form.festival} onChange={(e)=> setField('festival', e.target.value)} placeholder="Enter Festival/campaign name" className="w-full input bg-white border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 rounded-md px-3 py-2" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-700">Location</label>
+                    <input value={form.location} onChange={(e) => setField('location', e.target.value)} placeholder="City, State, Country" className="w-full input bg-white border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 rounded-md px-3 py-2" />
                   </div>
 
                   <div>

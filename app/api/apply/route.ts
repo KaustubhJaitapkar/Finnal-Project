@@ -74,17 +74,17 @@ export async function POST(req: Request) {
 
         uploadResult = await s3.upload(uploadParams).promise();
       } else {
-        // Local dev fallback: save the file under public/uploads/resumes and return a local URL
+        // Local dev fallback: save the file outside the project tree to avoid
+        // triggering Next dev server rebuilds. Serve via `/api/local-uploads/...`.
         try {
-          const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'resumes');
+          const uploadsDir = path.join(process.cwd(), '..', 'uploads', 'resumes');
           await fs.mkdir(uploadsDir, { recursive: true });
           const filename = `${Date.now()}-${resume.name}`;
           const filePath = path.join(uploadsDir, filename);
           await fs.writeFile(filePath, buffer);
-          const localUrl = `/uploads/resumes/${filename}`;
+          const localUrl = `/api/local-uploads/resumes/${filename}`;
           // Mimic S3 upload result shape enough for downstream code
           uploadResult = { Location: localUrl } as any;
-          // console.log('Saved resume to local path', filePath);
         } catch (err) {
           console.error('Failed to save resume locally', err);
           return NextResponse.json({ error: 'Failed to save resume on server.' }, { status: 500 });

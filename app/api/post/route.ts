@@ -70,12 +70,16 @@ export async function POST(req: Request) {
 
     // Build the data object separately. Cast to `any` to avoid TypeScript complaints
     // if the Prisma client types haven't been regenerated after schema changes.
+    // Ensure memberCount is a non-zero string so posts appear in listings that filter out '0'
+    const memberCountValue = (memberCount === undefined || memberCount === null) ? '1' : String(memberCount);
+    const normalizedMemberCount = memberCountValue === '0' ? '1' : memberCountValue;
+
     const organizerData: any = {
       teamName: teamName ?? undefined,
       hackathonName,
       regURL,
       hackathonMode,
-      memberCount,
+      memberCount: normalizedMemberCount,
       regDate: parsedDate,
       location,
       description,
